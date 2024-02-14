@@ -20,8 +20,17 @@ service = Service(executable_path=r"C:/Users/Juan Pablo/Documents/RPA Formulario
 
 def formato_fecha(fecha):
     try:
+        fecha_actual = datetime.now()
         parsed_fecha = parser.parse(fecha)
-        return parsed_fecha.strftime('%d/%m/%Y')
+        dia_siniestro = parsed_fecha.strftime('%d')
+        
+        if(float(dia_siniestro) <= 12):
+            if(float(dia_siniestro) <= fecha_actual.month):
+                return parsed_fecha.strftime('%d/%m/%Y')
+            else:
+                return parsed_fecha.strftime('%d/%m/%Y')
+        else:
+            return parsed_fecha.strftime('%d/%m/%Y')
     except ValueError:
         return "Formato no detectado"
     
@@ -70,7 +79,7 @@ def descarga_archivos():
                 
             )
     etiqueta.click()
-    time.sleep(15)
+    time.sleep(float(data['tiempo_espera']))
     driver.quit()
     
         
@@ -139,12 +148,11 @@ def cargar_archivos(fecha):
                 EC.presence_of_element_located((By.XPATH, "/html/body/div[2]/input"))
             )
     etiqueta.send_keys(f"{data['ruta_raiz']}{fecha}.zip")
-    driver.implicitly_wait(5)
-    time.sleep(5)
+    driver.implicitly_wait(50)
+    time.sleep(60)
     pyautogui.press('esc')
     driver.quit()
     
-    time.sleep(10)
     
 def crear_carpeta():
     if not os.path.exists(str(datetime.now().strftime("%d_%m_%Y"))):
@@ -160,3 +168,5 @@ def credenciales():
     with open(data, 'r', encoding='utf-8') as archivo_json:
         variables = json.load(archivo_json)
     return(variables)
+
+#cargar_archivos("12_02_2024")

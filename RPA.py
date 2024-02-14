@@ -15,7 +15,7 @@ from datetime import datetime
 import zipfile
 
 def busqueda_elemento_id(valor,id_HTML):
-    etiqueta = WebDriverWait(driver, 20).until(
+    etiqueta = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, id_HTML))
     )
     etiqueta.send_keys(valor)
@@ -25,7 +25,9 @@ mover_zip()
 
 service = Service(executable_path=r"C:/Users/Juan Pablo/Documents/RPA Formulario/chromedriver.exe")
 chrome_options = Options()
-chrome_options.add_argument("--headless")
+chrome_options.add_argument("--window-size=1920,1080")
+#chrome_options.add_argument("--incognito")
+#chrome_options.add_argument("--headless")
 
 directorio = 'C:/Users/Juan Pablo/Documents/RPA Formulario/previsora_JSON/'
 leidos = "leidos.txt"
@@ -59,10 +61,10 @@ for nombre_archivo in archivos_json:
         with open(leidos, "r+") as archivo:
             contenido = archivo.read()
             if (str(id)+".json") not in contenido:
-                driver.get("https://ecms.previsora.gov.co/appnet/UnityForm.aspx?d1=AfGMAHPe1S0R%2fcz2iAdBXSpJHIO0YgviS15UD0j27ERwLSQiFckq4W4e04Xjczr5hzxdnPy5kfHnZMpIVngsRo7o%2f%2bCFGiCSTAJQnX1YAoDne6%2bTEVUh8e4N%2fpDEokaHnA02hPiU9GS%2fzBLhUMjBb15PsKHMiTw7tqXHaFo508lP0tMeEtB2ZL8J%2bKJXi4vMzLSPBLwa1stB%2fpNzEXeBrNv9PcgenYvxGg4vEA1OL5RK3GrvEdkSFbqTRAiWfNqgQA%3d%3d")
-                    
                 try:
-                    WebDriverWait(driver, 20).until(EC.alert_is_present())
+                    driver.get("https://ecms.previsora.gov.co/appnet/UnityForm.aspx?d1=AfGMAHPe1S0R%2fcz2iAdBXSpJHIO0YgviS15UD0j27ERwLSQiFckq4W4e04Xjczr5hzxdnPy5kfHnZMpIVngsRo7o%2f%2bCFGiCSTAJQnX1YAoDne6%2bTEVUh8e4N%2fpDEokaHnA02hPiU9GS%2fzBLhUMjBb15PsKHMiTw7tqXHaFo508lP0tMeEtB2ZL8J%2bKJXi4vMzLSPBLwa1stB%2fpNzEXeBrNv9PcgenYvxGg4vEA1OL5RK3GrvEdkSFbqTRAiWfNqgQA%3d%3d")
+                    time.sleep(2)
+                    WebDriverWait(driver, 15).until(EC.alert_is_present())
                     alert = driver.switch_to.alert
                     alert.accept()
                 except Exception as e:
@@ -83,7 +85,7 @@ for nombre_archivo in archivos_json:
                     #Se Accede al input de la Sucursal
                     busqueda_elemento_id(poliza_sucursal,'sucursal18_input')
                     #Se Accede al DIV de los datos del contacto
-                    etiqueta = WebDriverWait(driver, 20).until(
+                    etiqueta = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.ID, 'sección42'))
                         )
                     etiqueta.click()
@@ -98,37 +100,42 @@ for nombre_archivo in archivos_json:
                     #Se Accede al input del correo por 2da vez
                     busqueda_elemento_id(check_email,'cuadrodetexto40_input')
                     #Se Accede al DIV de los datos del contacto
-                    etiqueta = WebDriverWait(driver, 20).until(
+                    etiqueta = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.ID, 'sección19'))
                         )
                     etiqueta.click()
                     time.sleep(2)
                     #------------------------------------------------------------------------
                     #Se Accede al input de la fecha
-                    busqueda_elemento_id(formato_fecha(reclamo_fecha),'fechasiniestro24_input')
+                    print(formato_fecha(reclamo_fecha))
+                    script = f""" document.getElementById("fechasiniestro24_input").value = "{formato_fecha(reclamo_fecha)}";"""
+                    driver.execute_script(script)
+
+                    #busqueda_elemento_id(formato_fecha(reclamo_fecha),'fechasiniestro24_input')
+                    time.sleep(2)
                     #Se Accede al input de la descripción
                     busqueda_elemento_id(reclamo_descripcion,'cuadrodetextodelíneasmúltiples60_input')
                     #------------------------------------------------------------------------
                     #Se Accede al input del checkbox Autorización
-                    etiqueta = WebDriverWait(driver, 20).until(
+                    etiqueta = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.ID, 'casilladeverificación55_input'))
                         )
                     etiqueta.click()
                     time.sleep(2)
                     #------------------------------------------------------------------------
                     #Se Accede al input del checkbox Entendido
-                    etiqueta = WebDriverWait(driver, 20).until(
+                    etiqueta = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.ID, 'casilladeverificación56_input'))
                         )
                     etiqueta.click()
-                    time.sleep(2)
+                    time.sleep(5)
                     #------------------------------------------------------------------------
                     #Se Accede al Botón de envíar
-                    etiqueta = WebDriverWait(driver, 20).until(
+                    etiqueta = WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.XPATH, '/html/body/form/div[3]/div/input'))
                         )
                     etiqueta.click()
-                    time.sleep(2)
+                    time.sleep(5)
                     #---------------------PÁGINA DEL PANTALLAZO---------------------------------------------------
                     #Espera a que la página cargue y luego captura la pantalla
                     etiqueta = WebDriverWait(driver, 120).until(
